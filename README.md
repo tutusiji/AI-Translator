@@ -2,6 +2,8 @@
 
 ![image](https://github.com/user-attachments/assets/25d6bf92-90f0-4814-af36-25558c449bc6)
 
+![image](https://github.com/user-attachments/assets/3bdece8d-c4f7-4447-b91f-ba28690ee525)
+
 
 # DeepSeek Translator Chrome Extension
 
