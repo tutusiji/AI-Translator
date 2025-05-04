@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DeepSeek Translator</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- Welcome Screen -->
+      <div class="welcome-container" id="welcomeScreen">
+        <div class="welcome-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m5 8 6 6" />
+            <path d="m4 14 6-6 2-3" />
+            <path d="M2 5h12" />
+            <path d="M7 2h1" />
+            <path d="m22 22-5-10-5 10" />
+            <path d="M14 18h6" />
+          </svg>
+        </div>
+        <h2 class="welcome-title">Welcome to DeepSeek Translator</h2>
+        <div class="api-key-form">
+          <label for="apiKey" class="form-label"
+            >Enter your DeepSeek API Key:</label
+          >
+          <input
+            type="password"
+            id="apiKey"
+            class="form-input"
+            placeholder="sk-..."
+          />
+          <button id="saveApiKey" class="dropdown-button">Save API Key</button>
+          <p class="form-help">
+            Your API key is stored locally and is only used for translation
+            requests.
+          </p>
+        </div>
+      </div>
+
+      <!-- Translation Interface (hidden by default) -->
+      <div class="container" id="translationInterface" style="display: none">
+        <div class="translation-area">
+          <div class="translation-column">
+            <div class="input-area">
+              <textarea
+                id="inputText"
+                placeholder="Enter text to translate..."
+              ></textarea>
+            </div>
+            <div class="output-area" id="outputArea"></div>
+          </div>
+          <div class="history-panel">
+            <div class="history-header">
+              <span>翻译记录</span>
+              <button class="clear-button" id="clearHistory">清空</button>
+            </div>
+            <div class="history-list" id="historyList"></div>
+          </div>
+        </div>
+        <div class="function-bar">
+          <div class="function-row">
+            <div class="dropdown-container">
+              <span>语言:</span>
+              <div class="dropdown">
+                <button class="dropdown-button language" id="languageDropdown">
+                  <span id="selectedLanguage">英汉互译</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </button>
+                <div
+                  class="dropdown-content"
+                  id="languageDropdownContent"
+                  style="display: none"
+                >
+                  <div class="dropdown-item" data-value="英汉互译">
+                    英汉互译
+                  </div>
+                  <div class="dropdown-item" data-value="英日互译">
+                    英日互译
+                  </div>
+                  <div class="dropdown-item" data-value="印尼语">印尼语</div>
+                  <div class="dropdown-item" data-value="葡萄牙语">
+                    葡萄牙语
+                  </div>
+                  <div class="dropdown-item" data-value="法语">法语</div>
+                  <div class="dropdown-item" data-value="泰语">泰语</div>
+                  <div class="dropdown-item" data-value="葡萄利语">
+                    葡萄利语
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="dropdown-container">
+              <span>AI模型:</span>
+              <div class="dropdown">
+                <button class="dropdown-button model" id="modelDropdown">
+                  <span id="selectedModel">deepseek-chat</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="m6 9 6 6 6-6" />
+                  </svg>
+                </button>
+                <div
+                  class="dropdown-content"
+                  id="modelDropdownContent"
+                  style="display: none"
+                >
+                  <div class="dropdown-item" data-value="deepseek-chat">
+                    deepseek-chat
+                  </div>
+                  <div class="dropdown-item" data-value="deepseek-reasoner">
+                    deepseek-reasoner
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="radio-group">
+              <div class="radio-item">
+                <input
+                  type="radio"
+                  id="iconTranslation"
+                  name="translationType"
+                  value="图标翻译"
+                  checked
+                />
+                <label for="iconTranslation">图标翻译</label>
+              </div>
+              <div class="radio-item">
+                <input
+                  type="radio"
+                  id="immediateTranslation"
+                  name="translationType"
+                  value="立即翻译"
+                />
+                <label for="immediateTranslation">立即翻译</label>
+              </div>
+              <div class="radio-item">
+                <input
+                  type="radio"
+                  id="disableSelection"
+                  name="translationType"
+                  value="关闭划词"
+                />
+                <label for="disableSelection">关闭划词</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>
