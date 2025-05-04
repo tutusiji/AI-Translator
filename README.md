@@ -1,3 +1,8 @@
+![image](https://github.com/user-attachments/assets/a5d9baba-7306-42a1-adad-cbfb70cfc389)
+
+![image](https://github.com/user-attachments/assets/25d6bf92-90f0-4814-af36-25558c449bc6)
+
+
 # DeepSeek Translator Chrome Extension
 
 A Chrome extension for translating text using DeepSeek AI.
