@@ -4,36 +4,24 @@ A Chrome extension for translating text using DeepSeek AI.
 
 ## Development
 
-1. Install dependencies:
-   \`\`\`
-   npm install
-   \`\`\`
-
-2. Run development server:
-   \`\`\`
-   npm run dev
-   \`\`\`
-
-3. Build the extension:
-   \`\`\`
-   npm run build-extension
-   \`\`\`
+直接用原生开发即可
 
 ## Loading the Extension in Chrome
 
-1. Build the extension using `npm run build-extension`
-2. Open Chrome and navigate to `chrome://extensions/`
-3. Enable "Developer mode" (toggle in the top-right corner)
-4. Click "Load unpacked" and select the `extension-dist` directory
-5. The extension should now be loaded and ready to use
+1. 使用‘ npm run Build -extension ’构建扩展。
+2. 打开 Chrome 浏览器，导航到“Chrome://extensions/”
+3. 启用“开发人员模式”（在右上角进行切换）
+4. 点击“加载解压”，选择“extension-dist”目录
+5. 扩展现在应该被加载并准备使用
 
 ## Features
 
-- Translate selected text on any webpage
-- Multiple translation modes:
-  - Icon Translation: Shows an icon when text is selected, click to translate
-  - Immediate Translation: Automatically translates selected text
-  - Disable Selection: Turns off the translation feature
-- Multiple language pairs support
-- DeepSeek AI model selection
-- Translation history
+- 翻译选定的文本在任何网页上 -多种翻译模式：
+- 图标翻译：选中文本后，单击图标进行翻译
+- 即时翻译：自动翻译选中的文本
+- Disable Selection：关闭翻译功能
+- 支持多语言对
+
+- DeepSeek AI 模型选择 -翻译历史
+- 翻译结果保存到剪贴板
+- 支持多种语言
