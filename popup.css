@@ -35,6 +35,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  height: 273px;
 }
 
 .input-area,
@@ -64,7 +65,13 @@ body {
   overflow: auto;
 }
 
+.translation-panel-right {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 .history-panel {
+  flex: 1;
   width: 154px;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
@@ -100,6 +107,7 @@ body {
   flex-grow: 1;
   overflow-y: auto;
   padding: 4px;
+  height: 194px;
 }
 
 .history-item {
@@ -154,6 +162,21 @@ body {
   font-size: 12px;
   cursor: pointer;
   min-width: 100px;
+}
+
+.translatePageBtn {
+  color: #3b82f6;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 4px 8px;
+  background-color: white;
+  font-size: 12px;
+  cursor: pointer;
+}
+.translatePageBtn:hover {
+  background-color: #f3f4f6;
 }
 
 .dropdown-button.language {

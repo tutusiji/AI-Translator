@@ -107,6 +107,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const radioButtons = document.querySelectorAll(
       'input[name="translationType"]'
     );
+    const translatePageBtn = document.getElementById("translatePageBtn");
 
     // Set initial values
     inputText.value = state.inputText;
@@ -190,6 +191,37 @@ document.addEventListener("DOMContentLoaded", async () => {
         chrome.storage.local.set({ translationType: type });
       });
     });
+
+    // 新增：翻译网页按钮点击事件
+    if (translatePageBtn) {
+      translatePageBtn.addEventListener("click", async () => {
+        translatePageBtn.disabled = true;
+        translatePageBtn.textContent = "正在翻译...";
+        try {
+          // 获取当前激活标签页
+          const [tab] = await chrome.tabs.query({
+            active: true,
+            currentWindow: true,
+          });
+          if (!tab || !tab.id) {
+            alert("未找到当前标签页");
+            return;
+          }
+          // 发送消息到 content-script
+          await chrome.tabs.sendMessage(tab.id, {
+            type: "translatePage",
+            language: state.selectedLanguage,
+            model: state.selectedModel,
+            apiKey: state.apiKey,
+          });
+        } catch (e) {
+          alert("发送翻译网页请求失败: " + (e.message || e));
+        } finally {
+          translatePageBtn.disabled = false;
+          translatePageBtn.textContent = "翻译网页";
+        }
+      });
+    }
 
     // Function to handle input changes with debounce
     let debounceTimeout;
@@ -299,10 +331,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         return isEnglish
           ? `Translate the following English text to Chinese: "${text}"`
           : `Translate the following Chinese text to English: "${text}"`;
+      } else if (language === "中日互译") {
+        // 判断是否为中文（包含汉字）
+        const isChinese = /[\u4e00-\u9fa5]/.test(text);
+        return isChinese
+          ? `Translate the following Chinese text to Japanese: "${text}"`
+          : `Translate the following Japanese text to Chinese: "${text}"`;
       } else {
         const languageMap = {
           英汉互译: "Chinese",
-          英日互译: "Japanese",
+          中日互译: "Japanese",
           印尼语: "Indonesian",
           葡萄牙语: "Portuguese",
           法语: "French",

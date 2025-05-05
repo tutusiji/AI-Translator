@@ -442,10 +442,16 @@ function getTranslationPrompt(text, language) {
     return isEnglish
       ? `Translate the following English text to Chinese: "${text}"`
       : `Translate the following Chinese text to English: "${text}"`;
+  } else if (language === "中日互译") {
+    // 判断是否为中文（包含汉字）
+    const isChinese = /[\u4e00-\u9fa5]/.test(text);
+    return isChinese
+      ? `Translate the following Chinese text to Japanese: "${text}"`
+      : `Translate the following Japanese text to Chinese: "${text}"`;
   } else {
     const languageMap = {
       英汉互译: "Chinese",
-      英日互译: "Japanese",
+      中日互译: "Japanese",
       印尼语: "Indonesian",
       葡萄牙语: "Portuguese",
       法语: "French",
@@ -581,4 +587,184 @@ function handleGlobalClick(event) {
 
   // 新增：抑制紧接着的 mouseup 弹窗
   shouldSuppressSelection = true;
+}
+
+// 新增：监听来自popup的消息，实现网页翻译
+chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+  if (message.type === "translatePage") {
+    try {
+      await translateWholePage(message);
+    } catch (e) {
+      alert("网页翻译失败: " + (e.message || e));
+    }
+  }
+});
+
+// 新增：翻译整个网页
+async function translateWholePage({ language, model, apiKey }) {
+  // 1. 获取所有可见文本节点
+  function getAllVisibleTextNodes(root) {
+    const walker = document.createTreeWalker(
+      root,
+      NodeFilter.SHOW_TEXT,
+      {
+        acceptNode: (node) => {
+          // 排除空白、script、style、noscript、input、textarea等
+          if (
+            !node.nodeValue.trim() ||
+            !node.parentElement ||
+            [
+              "SCRIPT",
+              "STYLE",
+              "NOSCRIPT",
+              "TEXTAREA",
+              "INPUT",
+              "CODE",
+              "PRE",
+            ].includes(node.parentElement.tagName) ||
+            node.parentElement.isContentEditable
+          ) {
+            return NodeFilter.FILTER_REJECT;
+          }
+          // 不翻译隐藏元素
+          const style = window.getComputedStyle(node.parentElement);
+          if (
+            style &&
+            (style.display === "none" || style.visibility === "hidden")
+          ) {
+            return NodeFilter.FILTER_REJECT;
+          }
+          return NodeFilter.FILTER_ACCEPT;
+        },
+      },
+      false
+    );
+    const nodes = [];
+    let node;
+    while ((node = walker.nextNode())) {
+      nodes.push(node);
+    }
+    return nodes;
+  }
+
+  // 2. 显示简单的进度提示
+  let progressDiv = document.createElement("div");
+  progressDiv.style.position = "fixed";
+  progressDiv.style.top = "20px";
+  progressDiv.style.right = "20px";
+  progressDiv.style.zIndex = "99999";
+  progressDiv.style.background = "#222";
+  progressDiv.style.color = "#fff";
+  progressDiv.style.padding = "12px 24px";
+  progressDiv.style.borderRadius = "8px";
+  progressDiv.style.boxShadow = "0 2px 8px rgba(0,0,0,0.2)";
+  progressDiv.style.fontSize = "16px";
+  progressDiv.textContent = "正在翻译网页...";
+  document.body.appendChild(progressDiv);
+
+  try {
+    const nodes = getAllVisibleTextNodes(document.body);
+    const texts = nodes.map((n) => n.nodeValue);
+    const batchSize = 20;
+    let translatedCount = 0;
+
+    for (let i = 0; i < texts.length; i += batchSize) {
+      const batchNodes = nodes.slice(i, i + batchSize);
+      const batchTexts = batchNodes.map((n) => n.nodeValue);
+
+      // 拼接为多段文本，分隔符用特殊标记
+      const sep = "\n---deepseek_split---\n";
+      const prompt = getTranslationPromptForPage(batchTexts, language, sep);
+
+      // 请求翻译
+      const translated = await requestTranslation({
+        prompt,
+        model,
+        apiKey,
+        batchTexts,
+        sep,
+        language,
+      });
+
+      // 替换文本
+      translated.forEach((t, idx) => {
+        batchNodes[idx].nodeValue = t;
+      });
+
+      translatedCount += batchNodes.length;
+      progressDiv.textContent = `正在翻译网页... (${translatedCount}/${texts.length})`;
+    }
+
+    progressDiv.textContent = "网页翻译完成";
+    setTimeout(() => progressDiv.remove(), 1500);
+  } catch (e) {
+    progressDiv.textContent = "网页翻译失败: " + (e.message || e);
+    setTimeout(() => progressDiv.remove(), 3000);
+    throw e;
+  }
+}
+
+// 构造网页翻译prompt
+function getTranslationPromptForPage(textArr, language, sep) {
+  // 复用已有的语言映射
+  const languageMap = {
+    英汉互译: "Chinese",
+    中日互译: "Japanese",
+    印尼语: "Indonesian",
+    葡萄牙语: "Portuguese",
+    法语: "French",
+    泰语: "Thai",
+    葡萄利语: "Portuguese",
+  };
+  const targetLang = languageMap[language] || "Chinese";
+  return `Translate the following texts to ${targetLang}, keep the order, and only return the translated texts separated by "${sep}":\n${textArr.join(
+    sep
+  )}`;
+}
+
+// 网页翻译API请求
+async function requestTranslation({
+  prompt,
+  model,
+  apiKey,
+  batchTexts,
+  sep,
+  language,
+}) {
+  const response = await fetch("https://api.deepseek.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a translation assistant. Provide only the translated text without any explanations or additional text.",
+        },
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      temperature: 0.1,
+      max_tokens: 2000,
+    }),
+  });
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error?.message || response.statusText);
+  }
+  const data = await response.json();
+  let translated = data.choices[0].message.content.trim();
+  // 处理返回内容，按分隔符拆分
+  let arr = translated.split(sep).map((s) => s.trim());
+  // 若数量不符，回退为原文
+  if (arr.length !== batchTexts.length) {
+    return batchTexts;
+  }
+  return arr;
 }

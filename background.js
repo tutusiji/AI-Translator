@@ -56,17 +56,18 @@ async function handleTranslation(request, sendResponse) {
 
 // Function to get translation prompt based on language
 function getTranslationPrompt(text, language) {
-  // 英汉、英日等互译类型，需判断内容语言
+  // 英汉、中日等互译类型，需判断内容语言
   const mutualMap = {
     英汉互译: {
       langA: "English",
       langB: "Chinese",
       regex: /^[a-zA-Z0-9\s.,!?;:'"\-]+$/,
     },
-    英日互译: {
-      langA: "English",
+    中日互译: {
+      langA: "Chinese",
       langB: "Japanese",
-      regex: /^[a-zA-Z0-9\s.,!?;:'"\-]+$/,
+      // 判断是否为中文（包含汉字）
+      regex: /[\u4e00-\u9fa5]/,
     },
   };
 
@@ -80,7 +81,7 @@ function getTranslationPrompt(text, language) {
     // 其它类型，直接目标语言
     const languageMap = {
       英汉互译: "Chinese",
-      英日互译: "Japanese",
+      中日互译: "Japanese",
       印尼语: "Indonesian",
       葡萄牙语: "Portuguese",
       法语: "French",
