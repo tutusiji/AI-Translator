@@ -1,9 +1,7 @@
+## chrome插件显示主窗口
 ![image](https://github.com/user-attachments/assets/a5d9baba-7306-42a1-adad-cbfb70cfc389)
-
-![image](https://github.com/user-attachments/assets/25d6bf92-90f0-4814-af36-25558c449bc6)
-
-![image](https://github.com/user-attachments/assets/3bdece8d-c4f7-4447-b91f-ba28690ee525)
-
+## 网页划词翻译
+![9d17e4cb685244c7330399a18135bfb](https://github.com/user-attachments/assets/badec885-ced3-451d-b7f2-1476b2bdcd04)
 
 # DeepSeek Translator Chrome Extension
 
