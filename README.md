@@ -8,7 +8,7 @@
 
 # DeepSeek Translator Chrome Extension
 
-一款使用 DeepSeek AI 翻译文本的 Chrome 扩展程序。
+一款使用 DeepSeek AI 翻译文本、网页的 Chrome 扩展程序。
 
 ## Development
 

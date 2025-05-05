@@ -92,6 +92,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Initialize UI elements
     const inputText = document.getElementById("inputText");
     const outputArea = document.getElementById("outputArea");
+    const copyOutputBtn = document.getElementById("copyOutputBtn");
     const historyList = document.getElementById("historyList");
     const languageDropdown = document.getElementById("languageDropdown");
     const modelDropdown = document.getElementById("modelDropdown");
@@ -219,6 +220,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         } finally {
           translatePageBtn.disabled = false;
           translatePageBtn.textContent = "翻译网页";
+        }
+      });
+    }
+
+    // 新增：复制按钮点击事件
+    if (copyOutputBtn) {
+      copyOutputBtn.addEventListener("click", () => {
+        const text = outputArea.textContent || "";
+        if (text) {
+          navigator.clipboard.writeText(text);
+          const oldTitle = copyOutputBtn.title;
+          copyOutputBtn.title = "已复制";
+          setTimeout(() => {
+            copyOutputBtn.title = oldTitle;
+          }, 1000);
         }
       });
     }
@@ -357,10 +373,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     function updateOutputArea() {
       if (state.isTranslating) {
         outputArea.innerHTML = `<div class="loading"><div class="spinner"></div></div>`;
+        if (copyOutputBtn) copyOutputBtn.style.display = "none";
       } else if (state.error) {
         outputArea.innerHTML = `<div class="error">${state.error}</div>`;
+        if (copyOutputBtn) copyOutputBtn.style.display = "none";
       } else {
         outputArea.textContent = state.outputText;
+        if (copyOutputBtn)
+          copyOutputBtn.style.display = state.outputText ? "block" : "none";
       }
     }
 

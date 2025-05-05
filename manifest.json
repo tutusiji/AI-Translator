@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "AI Translator",
   "version": "2.0",
-  "description": "Translation extension using DeepSeek API",
+  "description": "一款使用 DeepSeek AI 翻译文本、网页的 Chrome 扩展程序。",
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
