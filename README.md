@@ -1,6 +1,7 @@
 ## chrome 插件显示主窗口
 
-![image](https://github.com/user-attachments/assets/a5d9baba-7306-42a1-adad-cbfb70cfc389)
+![image](https://github.com/user-attachments/assets/767bd733-e579-48d7-8756-c2707cf686c0)
+
 
 ## 网页划词翻译
 
