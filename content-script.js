@@ -178,15 +178,7 @@ function handleTextSelection(event) {
       console.log("Immediate translation triggered");
       const rect = selectedTextRect;
       showTranslationPopup(selectedText, rect);
-      translateText(selectedText).then((result) => {
-        console.log("Translation result:", result);
-        const translatedElement = translationPopup.querySelector(
-          ".deepseek-translation-popup-translated"
-        );
-        if (translatedElement) {
-          translatedElement.innerHTML = result;
-        }
-      });
+      translateText(selectedText).then(showTranslationResult);
     } else if (translationSettings.translationType === "图标翻译") {
       // 使用鼠标松开时的位置来显示图标
       const x = event.clientX;
@@ -240,11 +232,22 @@ function showTranslationPopup(originalText, rect) {
         <button class="deepseek-translation-popup-close">×</button>
       </div>
       <div class="deepseek-translation-popup-body">
-        <div class="deepseek-translation-popup-original">${displayText}</div>
+        <div class="deepseek-translation-popup-original">
+          <button class="deepseek-tts-btn" title="朗读原文" style="background:none;border:none;cursor:pointer;padding:0;margin-right:6px;vertical-align:middle;">
+           🔊
+          </button>
+          <span class="deepseek-translation-popup-original-text">${displayText}</span>
+        </div>
         <div class="deepseek-translation-popup-translated">
-          <div class="loading">
-            <div class="spinner"></div>
-            <span>Translating...</span>
+          <button class="deepseek-tts-btn-translated" title="朗读翻译" style="background:none;border:none;cursor:pointer;padding:0;margin-right:6px;vertical-align:middle;">
+           🔊
+          </button>
+          <div class="deepseek-translation-popup-translated-text">
+            <div class="loading">
+              <div class="spinner"></div>
+              <span>Translating...</span>
+            </div>
+            <div class="translated-result" style="display:none;"></div>
           </div>
         </div>
       </div>
@@ -276,7 +279,7 @@ function showTranslationPopup(originalText, rect) {
     copyButton.addEventListener("click", (e) => {
       e.stopPropagation();
       const translatedElement = translationPopup.querySelector(
-        ".deepseek-translation-popup-translated"
+        ".deepseek-translation-popup-translated-text"
       );
       let text = "";
       if (translatedElement) {
@@ -297,6 +300,58 @@ function showTranslationPopup(originalText, rect) {
     // 悬停时显示提示（已通过title属性实现）
   }
 
+  // 新增：TTS朗读按钮事件（原文）
+  const ttsBtn = translationPopup.querySelector(".deepseek-tts-btn");
+  if (ttsBtn) {
+    ttsBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const text =
+        translationPopup.querySelector(
+          ".deepseek-translation-popup-original-text"
+        )?.textContent || "";
+      if (text) {
+        window.speechSynthesis.cancel();
+        const utter = new window.SpeechSynthesisUtterance(text);
+        // 只设置一次lang，自动检测即可
+        if (/[\u3040-\u30ff\u31f0-\u31ff]/.test(text)) {
+          utter.lang = "ja-JP";
+        } else if (/[\u4e00-\u9fa5]/.test(text)) {
+          utter.lang = "zh-CN";
+        } else {
+          utter.lang = "en-US";
+        }
+        window.speechSynthesis.speak(utter);
+      }
+    });
+  }
+
+  // 新增：TTS朗读按钮事件（翻译）
+  const ttsBtnTranslated = translationPopup.querySelector(
+    ".deepseek-tts-btn-translated"
+  );
+  if (ttsBtnTranslated) {
+    ttsBtnTranslated.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const text =
+        translationPopup.querySelector(
+          ".deepseek-translation-popup-translated-text"
+        )?.textContent || "";
+      if (text) {
+        window.speechSynthesis.cancel();
+        const utter = new window.SpeechSynthesisUtterance(text);
+        // 只设置一次lang，自动检测即可
+        if (/[\u3040-\u30ff\u31f0-\u31ff]/.test(text)) {
+          utter.lang = "ja-JP";
+        } else if (/[\u4e00-\u9fa5]/.test(text)) {
+          utter.lang = "zh-CN";
+        } else {
+          utter.lang = "en-US";
+        }
+        window.speechSynthesis.speak(utter);
+      }
+    });
+  }
+
   // Add close button event listener
   const closeButton = translationPopup.querySelector(
     ".deepseek-translation-popup-close"
@@ -315,6 +370,57 @@ function showTranslationPopup(originalText, rect) {
   // Add to document
   document.body.appendChild(translationPopup);
   console.log("Translation popup added to document");
+
+  // 拖拽功能：允许拖动弹窗
+  const header = translationPopup.querySelector(
+    ".deepseek-translation-popup-header"
+  );
+  let isDragging = false;
+  let dragOffsetX = 0;
+  let dragOffsetY = 0;
+
+  if (header) {
+    header.style.cursor = "move";
+    header.addEventListener("mousedown", (e) => {
+      isDragging = true;
+      // 计算鼠标与弹窗左上角的偏移
+      const rect = translationPopup.getBoundingClientRect();
+      dragOffsetX = e.clientX - rect.left;
+      dragOffsetY = e.clientY - rect.top;
+      // 防止选中文字
+      e.preventDefault();
+    });
+
+    document.addEventListener("mousemove", onDragMove);
+    document.addEventListener("mouseup", onDragEnd);
+  }
+
+  function onDragMove(e) {
+    if (!isDragging) return;
+    // 计算新的弹窗位置
+    let left = e.clientX - dragOffsetX;
+    let top = e.clientY - dragOffsetY;
+    // 限制弹窗不超出窗口
+    left = Math.max(
+      0,
+      Math.min(left, window.innerWidth - translationPopup.offsetWidth)
+    );
+    top = Math.max(
+      0,
+      Math.min(top, window.innerHeight - translationPopup.offsetHeight)
+    );
+    translationPopup.style.left = left + "px";
+    translationPopup.style.top = top + "px";
+    translationPopup.style.right = ""; // 防止右侧定位影响
+    translationPopup.style.bottom = "";
+  }
+
+  function onDragEnd() {
+    isDragging = false;
+  }
+
+  // 修改翻译结果填充逻辑，填入span
+  translateText(selectedText).then(showTranslationResult);
 }
 
 // Handle translation icon click
@@ -352,34 +458,7 @@ function handleIconClick(event) {
   showTranslationPopup(selectedText, rect);
 
   // Translate the selected text
-  translateText(selectedText).then((result) => {
-    console.log("Translation completed:", result);
-
-    // Update the popup with the translation result
-    if (translationPopup) {
-      const translatedElement = translationPopup.querySelector(
-        ".deepseek-translation-popup-translated"
-      );
-      if (translatedElement) {
-        translatedElement.innerHTML = result;
-        console.log("Translation popup updated with result");
-      } else {
-        console.error("Translation element not found in popup");
-      }
-    } else {
-      console.error("Translation popup not found when updating result");
-      // If popup was removed, recreate it
-      showTranslationPopup(selectedText, rect);
-      setTimeout(() => {
-        const translatedElement = translationPopup.querySelector(
-          ".deepseek-translation-popup-translated"
-        );
-        if (translatedElement) {
-          translatedElement.innerHTML = result;
-        }
-      }, 100);
-    }
-  });
+  translateText(selectedText).then(showTranslationResult);
 
   // Hide the icon after translation
   if (translationIcon) {
@@ -429,6 +508,24 @@ function handleGlobalClick(event) {
 
   // 新增：抑制紧接着的 mouseup 弹窗
   shouldSuppressSelection = true;
+}
+
+// 修改后的 showTranslationResult 函数
+function showTranslationResult(result) {
+  if (!translationPopup) return;
+  const translatedContainer = translationPopup.querySelector(
+    ".deepseek-translation-popup-translated-text"
+  );
+  if (translatedContainer) {
+    const loadingDiv = translatedContainer.querySelector(".loading");
+    const resultDiv = translatedContainer.querySelector(".translated-result");
+    // 修正：只在有翻译结果时才隐藏 loading，且不要提前设置 loadingDiv.style.display = ""
+    if (resultDiv) {
+      if (result.length > 0) loadingDiv.style.display = "none";
+      resultDiv.style.display = "";
+      resultDiv.innerHTML = result;
+    }
+  }
 }
 
 // Function to get translation prompt based on language
@@ -668,7 +765,7 @@ async function translateWholePage({ language, model, apiKey }) {
     const batchSize = 20;
     let translatedCount = 0;
 
-    for (let i = 0; i < texts.length; i += batchSize) {
+    for (let i = 0; texts.length; i += batchSize) {
       const batchNodes = nodes.slice(i, i + batchSize);
       const batchTexts = batchNodes.map((n) => n.nodeValue);
 

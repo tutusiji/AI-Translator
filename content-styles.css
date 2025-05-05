@@ -1,12 +1,13 @@
 .deepseek-translation-icon {
   position: fixed;
-  width: 20px;
-  height: 20px;
+  width: 26px;
+  height: 26px;
   background-color: #ffffff;
   border-radius: 8px;
   border: 2px solid #3498db;
   padding: 2px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-sizing: border-box;
   cursor: pointer;
   z-index: 9999;
   pointer-events: auto;
@@ -47,6 +48,7 @@
   padding: 8px 12px;
   background-color: #f9fafb;
   border-bottom: 1px solid #e5e7eb;
+  cursor: move;
 }
 
 .deepseek-translation-popup-header span {
@@ -145,3 +147,49 @@
     transform: rotate(360deg);
   }
 }
+
+.deepseek-translation-popup-translated-text {
+  min-height: 24px;
+  display: inline;
+  vertical-align: middle;
+  font-size: 15px;
+  color: #222;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  word-break: break-word;
+}
+.deepseek-translation-popup-translated-text .loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #888;
+  font-size: 14px;
+  min-height: 24px;
+}
+.deepseek-translation-popup-translated-text .spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ccc;
+  border-top: 2px solid #888;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 4px;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.deepseek-translation-popup-translated-text .translated-result {
+  display: inline;
+}
+/* 
+.deepseek-tts-btn,
+.deepseek-tts-btn-translated {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-right: 6px;
+  vertical-align: middle;
+} */
