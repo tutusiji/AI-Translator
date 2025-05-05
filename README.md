@@ -1,5 +1,7 @@
 ## chrome 插件显示主窗口
 
+![c61278e68abf6ffb15337f72ef556a7](https://github.com/user-attachments/assets/ee1ce81d-9b4f-40c9-b4d0-bb296d649732)
+
 ![image](https://github.com/user-attachments/assets/767bd733-e579-48d7-8756-c2707cf686c0)
 
 
