@@ -230,7 +230,13 @@ function showTranslationPopup(originalText, rect) {
   translationPopup.innerHTML = `
     <div class="deepseek-translation-popup-content">
       <div class="deepseek-translation-popup-header">
-        <span>DeepSeek Translator</span>
+        <span class="deepseek-translation-popup-title">AI Translator 翻译结果</span>
+        <button class="deepseek-translation-popup-copy" title="复制翻译结果">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" style="vertical-align:middle;">
+            <rect x="6" y="6" width="9" height="9" rx="2" stroke="#888" stroke-width="1.5" fill="none"/>
+            <rect x="3" y="3" width="9" height="9" rx="2" stroke="#bbb" stroke-width="1" fill="none"/>
+          </svg>
+        </button>
         <button class="deepseek-translation-popup-close">×</button>
       </div>
       <div class="deepseek-translation-popup-body">
@@ -261,6 +267,35 @@ function showTranslationPopup(originalText, rect) {
   // 新弹窗时终止上一个请求
   if (abortController) abortController.abort();
   abortController = null;
+
+  // 复制按钮事件
+  const copyButton = translationPopup.querySelector(
+    ".deepseek-translation-popup-copy"
+  );
+  if (copyButton) {
+    copyButton.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const translatedElement = translationPopup.querySelector(
+        ".deepseek-translation-popup-translated"
+      );
+      let text = "";
+      if (translatedElement) {
+        // 只复制纯文本
+        text =
+          translatedElement.innerText || translatedElement.textContent || "";
+      }
+      if (text) {
+        navigator.clipboard.writeText(text);
+        // 临时修改title为“已复制”
+        const oldTitle = copyButton.title;
+        copyButton.title = "已复制";
+        setTimeout(() => {
+          copyButton.title = oldTitle;
+        }, 1000);
+      }
+    });
+    // 悬停时显示提示（已通过title属性实现）
+  }
 
   // Add close button event listener
   const closeButton = translationPopup.querySelector(
