@@ -4,6 +4,7 @@
 
 ![image](https://github.com/user-attachments/assets/767bd733-e579-48d7-8756-c2707cf686c0)
 
+
 ## 网页划词翻译
 
 ![9d17e4cb685244c7330399a18135bfb](https://github.com/user-attachments/assets/badec885-ced3-451d-b7f2-1476b2bdcd04)
@@ -14,20 +15,15 @@
 
 ## Development
 
-直接用原生开发即可。
-
-首次使用，需要用户自己输入 deepseek api key，存储在浏览器本地中。
-
-源码没编译过，可以看到源码里面没有上传统计代码，可以放心使用。
+直接用原生开发即可
 
 ## Loading the Extension in Chrome
 
-1. 下载压缩包
+1. 使用‘ npm run Build -extension ’构建扩展。
 2. 打开 Chrome 浏览器，导航到“Chrome://extensions/”
 3. 启用“开发人员模式”（在右上角进行切换）
-4. 点击“加载解压”，选择“解压后的”目录
+4. 点击“加载解压”，选择“extension-dist”目录
 5. 扩展现在应该被加载并准备使用
-6. 将扩展添加到浏览器中常驻项
 
 ## Features
 
