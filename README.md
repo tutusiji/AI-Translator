@@ -22,7 +22,7 @@
 
 deepseek-chat 是 deepseek-V3 模型；
 
-deepseek-reasoner 是 deepseek-R1 模型。
+deepseek-reasoner 是 deepseek-R1 模型，推理模型，反应速度很慢。
 
 deepseek 开发文档 https://api-docs.deepseek.com/zh-cn/
 
