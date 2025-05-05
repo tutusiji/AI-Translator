@@ -20,6 +20,12 @@
 
 源码没编译过，可以看到源码里面没有上传统计代码，可以放心使用。
 
+deepseek-chat 是 deepseek-V3 模型；
+
+deepseek-reasoner 是 deepseek-R1 模型。
+
+deepseek 开发文档 https://api-docs.deepseek.com/zh-cn/
+
 ## Loading the Extension in Chrome
 
 1. 下载压缩包
