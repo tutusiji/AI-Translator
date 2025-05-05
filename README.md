@@ -6,7 +6,8 @@
 
 ## 网页划词翻译
 
-![9d17e4cb685244c7330399a18135bfb](https://github.com/user-attachments/assets/badec885-ced3-451d-b7f2-1476b2bdcd04)
+![image](https://github.com/user-attachments/assets/6c0ff86d-660f-4cef-af5f-4ea0d896c4f7)
+
 
 # DeepSeek Translator Chrome Extension
 
