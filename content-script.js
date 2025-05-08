@@ -258,12 +258,12 @@ function showTranslationPopup(originalText, rect) {
   translationPopup.style.position = "fixed";
   translationPopup.style.left = `${rect.left}px`;
   translationPopup.style.top = `${rect.bottom + 10}px`;
-  translationPopup.style.width = "300px";
+  translationPopup.style.width = "500px";
   translationPopup.style.backgroundColor = "#ffffff";
   translationPopup.style.borderRadius = "8px";
   translationPopup.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.15)";
   translationPopup.style.zIndex = "10000";
-  translationPopup.style.maxWidth = "320px";
+  translationPopup.style.maxWidth = "520px";
   translationPopup.style.overflow = "hidden";
   translationPopup.style.display = "block"; // Ensure it's displayed
 
